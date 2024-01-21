@@ -1,0 +1,169 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+#Zadanie 1
+def gompertz(x, r, K):
+    return r * x * np.log(K/x)
+
+def gompertz2(r, K, x0, t_end, dt):
+    t = np.arange(0, t_end + dt, dt)
+    x = np.zeros(len(t))
+    x[0] = x0
+
+    for i in range(1, len(t)):
+        x[i] = x[i-1] + dt * gompertz(x[i-1], r, K)
+    return t, x
+
+r = 0.4
+K = 10000
+x0 = 10
+tf = 75
+dt = 0.01
+
+t, x = gompertz2(r, K, x0, tf, dt)
+
+plt.plot(t, x, )
+plt.xlabel('Czas')
+plt.ylabel('Ilosć komórek nowotworowych')
+plt.title('Wzrost komórek nowotworowych - równanie Gompertza')
+plt.grid(True)
+plt.show()
+
+def verhulst(x, t):
+    return r * x * (1 - x / K)
+
+x_verhulst = np.zeros(len(t))
+x_verhulst[0] = x0
+
+for i in range(1,len(t)):
+   x_verhulst[i] = x_verhulst[i-1] + dt * verhulst(x_verhulst[i-1], t[i-1])
+
+plt.plot(t, x, label="Gompertz")
+plt.plot(t, x_verhulst, label="Verhulst")
+plt.xlabel("Czas")
+plt.ylabel("Ilość komórek nowotworowych")
+plt.title("Porównanie modeli Gompertza i Verhulsta")
+plt.grid(True)
+plt.legend()
+plt.show()
+
+#Zadanie 2
+epsilon1 = 1.25
+epsilon2 = 0.5
+gamma1 = 0.5
+gamma2 = 0.2
+h1 = 0.1
+h2 = 0.2
+
+def dn1_dt(n1, n2):
+    return (epsilon1 - gamma1*(h1*n1 + h2*n2))*n1
+
+def dn2_dt(n1, n2):
+    return (epsilon2 - gamma2*(h1*n1 + h2*n2))*n2
+
+def metoda_eulera(n1, n2, dt, num):
+    czas = []
+    N1 = []
+    N2 = []
+
+    t = 0
+    n1 = n1_0
+    n2 = n2_0
+
+    for i in range(num):
+        czas.append(t)
+        N1.append(n1)
+        N2.append(n2)
+
+        dn1 = dn1_dt(n1, n2)
+        dn2 = dn2_dt(n1, n2)
+
+        n1 += dn1 * dt
+        n2 += dn2 * dt
+        t += dt
+
+    return czas, N1, N2
+
+n1_0 = 3
+n2_0 = 4
+dt = 0.01
+num = 1000
+
+czas, N1, N2 = metoda_eulera(n1_0, n2_0, dt, num)
+plt.plot(czas, N1, label='Gatunek I')
+plt.plot(czas, N2, label='Gatunek II')
+plt.xlabel('Czas')
+plt.ylabel('Populacja')
+plt.grid()
+plt.legend()
+plt.title('Współzawodnictwo międzygatunkowe')
+plt.show()
+
+e1 = 5
+e2 = 5
+g1 = 4
+g2 = 8
+h1 = 1
+h2 = 4
+n1_0 = 3
+n2_0 = 4
+dt = 0.01
+t_max = 10
+
+t = np.arange(0, t_max, dt)
+n1 = np.zeros(len(t))
+n2 = np.zeros(len(t))
+n1[0] = n1_0
+n2[0] = n2_0
+
+for i in range(1, len(t)):
+    n1[i] = n1[i-1] + dt * (e1 - g1 * (h1*n1[i-1] + h2*n2[i-1]))
+    n2[i] = n2[i-1] + dt * (e2 - g2 * (h1*n1[i-1] + h2*n2[i-1]))
+
+plt.title('Współzawodnictwo międzygatunkowe')
+plt.plot(t, n1, label='Gatunek III', color = 'red')
+plt.plot(t, n2, label='Gatunek IV', color = 'green')
+plt.xlabel('Czas')
+plt.ylabel('Populacja')
+plt.grid()
+plt.legend()
+plt.show()
+
+
+#Zadanie 3
+
+n1, n2 = 4,8
+n3, n4 = 8,8
+n5, n6 = 12,8
+
+
+def dn1_dt(N1, N2, e1, y1, h1, h2):
+    return (e1 - y1*(h1*N1 + h2*N2))*N1
+
+def dn2_dt(N1, N2, e2, y2, h1, h2):
+    return (e2 - y2*(h1*N1 + h2*N2))*N2
+
+e1, y1, h1 = 0.8, 1, 0.3
+e2, y2, h2 = 0.4, 0.5, 0.4
+
+plt.figure()
+N1_vals = np.linspace(0, 15, 30)
+N2_vals = np.linspace(0, 15, 30) 
+N1, N2 = np.meshgrid(N1_vals, N2_vals)
+dN1_dt = dn1_dt(N1, N2, e1, y1, h1, h2)
+dN2_dt = dn2_dt(N1, N2, e2, y2, h1, h2)
+plt.quiver(N1, N2, dN1_dt, dN2_dt)
+plt.plot(n1,n2)
+plt.plot(n3,n4)
+plt.plot(n5,n6)
+plt.xlabel('N1')
+plt.ylabel('N2')
+plt.title('Portret fazowy')
+plt.grid()
+plt.show()
+
+
+
+
+    
+
